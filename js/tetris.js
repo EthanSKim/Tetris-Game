@@ -184,6 +184,8 @@ startButton.addEventListener("click", ()=> {
 })
 
 restartButton.addEventListener("click", ()=>{
+    score = 0;
+    scoreDisplay.innerHTML = score;
     playground.innerHTML = "";
     gameOverText.style.display = "none";
     init();
