@@ -4,9 +4,11 @@ import BLOCKS from "./blocks.js"
 const playground = document.querySelector(".playground > ul");
 const gameStartText = document.querySelector(".gameStart-text");
 const gameOverText = document.querySelector(".gameOver-text");
+const pausedText = document.querySelector(".paused-text");
 const scoreDisplay = document.querySelector(".score");
 const startButton = document.querySelector(".gameStart-text > button");
 const restartButton = document.querySelector(".gameOver-text > button");
+const box = document.querySelector(".box");
 
 // Setting
 const GAME_ROWS = 20;
@@ -180,6 +182,7 @@ document.addEventListener("keydown", e=>{
 
 startButton.addEventListener("click", ()=> {
     gameStartText.style.display = "none";
+    box.style.pointerEvents = "initial";
     generateNewBlock();
 })
 
@@ -190,4 +193,20 @@ restartButton.addEventListener("click", ()=>{
     gameOverText.style.display = "none";
     init();
     generateNewBlock();
+})
+
+box.addEventListener("click", (e) => {
+    if(e.target.classList.contains('pause')) {
+        e.target.classList.toggle('pause');
+        e.target.classList.toggle('resume');
+        pausedText.style.display = "inherit";
+        clearInterval(downInterval);
+    } else {
+        e.target.classList.toggle('pause');
+        e.target.classList.toggle('resume');
+        pausedText.style.display = "none";
+        downInterval = setInterval(() => {
+            moveBlock("top", 1);
+        }, duration);
+    }
 })
