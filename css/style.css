@@ -73,9 +73,49 @@ body {
     margin-right: 50px;
 }
 
+.holdBox > ul {
+    border: 1px solid #333;
+    margin: 0 auto;
+}
+
+.holdBox > ul > li {
+    width: 100%;
+    height: 25px;
+}
+
+.holdBox > ul > li > ul {
+    display: flex;
+}
+
+.holdBox > ul > li > ul > li {
+    width: 25px;
+    height: 25px;
+    outline: 1px solid #ccc;
+}
+
 .main > .queueBox {
     position: relative;
     margin-left: 50px;
+}
+
+.queueBox > ul {
+    border: 1px solid #333;
+    margin: 0 auto;
+}
+
+.queueBox > ul > li {
+    width: 100%;
+    height: 25px;
+}
+
+.queueBox > ul > li > ul {
+    display: flex;
+}
+
+.queueBox > ul > li > ul > li {
+    width: 25px;
+    height: 25px;
+    outline: 1px solid #ccc;
 }
 
 .queueBox > .playPause {

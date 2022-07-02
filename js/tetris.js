@@ -9,6 +9,8 @@ const scoreDisplay = document.querySelector(".score");
 const startButton = document.querySelector(".gameStart-text > button");
 const restartButton = document.querySelector(".gameOver-text > button");
 const box = document.querySelector(".box");
+const holdBox = document.querySelector(".holdBox > ul");
+const queueBox = document.querySelector(".queueBox > ul");
 
 // Setting
 const GAME_ROWS = 20;
@@ -19,6 +21,14 @@ let score = 0;
 let duration = 500;
 let downInterval;
 let tempMovingItem;
+let tempHeldItem;
+
+let heldItem = {
+    type: "tree",
+    direction: 0,
+    top: 0,
+    left: 0
+};
 
 const movingItem = {
     type: "tree",
@@ -35,6 +45,10 @@ function init() {
     for(let i=0; i<GAME_ROWS; i++) {
         prependNewLine();
     }
+    for(let i=0; i<4; i++) {
+        createHoldBox();
+        createQueueBox();
+    }
 }
 
 
@@ -47,6 +61,28 @@ function prependNewLine() {
     }
     li.prepend(ul);
     playground.prepend(li);
+}
+
+function createHoldBox() {
+    const li = document.createElement("li");
+    const ul = document.createElement("ul");
+    for(let j=0; j<4; j++) {
+        const matrix = document.createElement("li");
+        ul.prepend(matrix);
+    }
+    li.prepend(ul);
+    holdBox.prepend(li);
+}
+
+function createQueueBox() {
+    const li = document.createElement("li");
+    const ul = document.createElement("ul");
+    for(let j=0; j<4; j++) {
+        const matrix = document.createElement("li");
+        ul.prepend(matrix);
+    }
+    li.prepend(ul);
+    queueBox.prepend(li);
 }
 
 function renderBlocks(moveType = "") {
@@ -66,6 +102,7 @@ function renderBlocks(moveType = "") {
             tempMovingItem = { ...movingItem }
             if(moveType === 'retry') {
                 clearInterval(downInterval);
+                box.style.pointerEvents = "none";
                 showGameOverText()
             }
             setTimeout(()=> {
@@ -110,8 +147,6 @@ function checkMatch() {
     generateNewBlock();
 }
 
-
-
 function generateNewBlock() {
     clearInterval(downInterval);
     downInterval = setInterval(() => {
@@ -153,6 +188,71 @@ function dropBlock() {
     }, 15);
 }
 
+function holdBlock() {
+    let empty = true;
+    const HBchildNodes = holdBox.childNodes;
+    HBchildNodes.forEach(child => {
+        child.children[0].childNodes.forEach(li => {
+            if(li.classList.contains("held")) {
+                empty = false;
+            }
+            li.className = "";
+        })
+    })
+    eraseBlock();
+    if(!empty) {
+        tempHeldItem = { ...movingItem }
+        tempMovingItem = { ...heldItem }
+        movingToHold();
+        generateHeldBlock();
+    } else {
+        tempHeldItem = { ...movingItem }
+        tempMovingItem = { ...heldItem }
+        movingToHold();
+        console.log("hi");
+        generateNewBlock();
+    }
+    
+
+}
+
+function movingToHold() {
+    // 1. render moving block to holdBox
+    BLOCKS[tempHeldItem.type][0].some(block => {
+        const x = block[0];
+        const y = block[1];
+        const target = holdBox.childNodes[y].childNodes[0].childNodes[x];
+        target.classList.add(tempHeldItem.type, "held");
+    })
+    heldItem = { ...movingItem }
+}
+
+function eraseBlock() {
+    // 2. remove moving block from playground
+    const PGchildNodes = playground.childNodes;
+    PGchildNodes.forEach(child => {
+        child.children[0].childNodes.forEach(li => {
+            if(li.classList.contains("moving")) {
+                clearInterval(downInterval);
+                li.classList.remove(movingItem.type, "moving");
+            }
+        })
+    })
+
+}
+
+function generateHeldBlock() {
+    clearInterval(downInterval);
+    downInterval = setInterval(() => {
+        moveBlock("top", 1);
+    }, duration);
+    movingItem.type = tempMovingItem.type;
+    movingItem.top = 0;
+    movingItem.left = 3;
+    movingItem.direction = 0;
+    renderBlocks();
+}
+
 function showGameOverText() {
     gameOverText.style.display = "flex";
 }
@@ -175,6 +275,8 @@ document.addEventListener("keydown", e=>{
         case 32:
             dropBlock();
             break;
+        case 67:
+            holdBlock();
         default:
             break;
     }
@@ -191,6 +293,7 @@ restartButton.addEventListener("click", ()=>{
     scoreDisplay.innerHTML = score;
     playground.innerHTML = "";
     gameOverText.style.display = "none";
+    box.style.pointerEvents = "initial";
     init();
     generateNewBlock();
 })
