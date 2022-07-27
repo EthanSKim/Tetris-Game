@@ -160,7 +160,7 @@ function generateNewBlock() {
     movingItem.left = 3;
     movingItem.direction = 0;
     tempMovingItem = { ...movingItem }
-    renderBlocks();
+    showOnQueueBox();
 }
 
 function checkEmpty(target) {
@@ -247,11 +247,13 @@ function generateHeldBlock() {
         moveBlock("top", 1);
     }, duration);
     movingItem.type = tempMovingItem.type;
-    movingItem.top = 0;
-    movingItem.left = 3;
-    movingItem.direction = 0;
+    tempMovingItem.top = 0;
+    tempMovingItem.left = 3;
+    tempMovingItem.direction = 0;
     renderBlocks();
 }
+
+function showOnQueueBox() {}
 
 function showGameOverText() {
     gameOverText.style.display = "flex";
