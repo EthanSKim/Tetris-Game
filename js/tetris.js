@@ -22,6 +22,8 @@ let duration = 500;
 let downInterval;
 let tempMovingItem;
 let tempHeldItem;
+let nextItem = "";
+let tempNextItem;
 
 let heldItem = {
     type: "tree",
@@ -155,11 +157,11 @@ function generateNewBlock() {
 
     const blockArray = Object.entries(BLOCKS);
     const randomIndex = Math.floor(Math.random()*blockArray.length);
-    movingItem.type = blockArray[randomIndex][0];
-    movingItem.top = 0;
-    movingItem.left = 3;
-    movingItem.direction = 0;
-    tempMovingItem = { ...movingItem }
+    tempNextItem = blockArray[randomIndex][0];
+    //movingItem.top = 0;
+    //movingItem.left = 3;
+    //movingItem.direction = 0;
+    //tempMovingItem = { ...movingItem }
     showOnQueueBox();
 }
 
@@ -253,7 +255,36 @@ function generateHeldBlock() {
     renderBlocks();
 }
 
-function showOnQueueBox() {}
+function showOnQueueBox() {
+    const QBchildNodes = queueBox.childNodes;
+    QBchildNodes.forEach(child => {
+        child.children[0].childNodes.forEach(li => {
+            li.classList = "";
+        })
+    })
+    BLOCKS[tempNextItem][0].some(block => {
+        const x = block[0];
+        const y = block[1];
+        const target = queueBox.childNodes[y].childNodes[0].childNodes[x];
+        target.classList.add(tempNextItem);
+    })
+    if(nextItem === "") {
+        nextItem = tempNextItem;
+        movingItem.type = nextItem;
+        movingItem.top = 0;
+        movingItem.left = 3;
+        movingItem.direction = 0;
+        tempMovingItem = { ...movingItem }
+        generateNewBlock();
+    } else {
+        movingItem.type = nextItem;
+        movingItem.top = 0;
+        movingItem.left = 3;
+        movingItem.direction = 0;
+        tempMovingItem = { ...movingItem }
+        nextItem = tempNextItem;
+    }
+}
 
 function showGameOverText() {
     gameOverText.style.display = "flex";
